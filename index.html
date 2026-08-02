@@ -24,7 +24,6 @@
 
     <script>
         const SUPABASE_URL = "https://whtvjpowjzexmvcxnsmu.supabase.co";
-        // Corrected Key with lowercase 'e' at the beginning
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndodHZqcG93anpleG12Y3huc211Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU2NDUyMTAsImV4cCI6MjEwMTIyMTIxMH0.C9SKEQIVwtR6Nv-2_7skWipW_-_FALgQ0nuTY4ONCiQ";
 
         async function fetchMatches() {
@@ -63,7 +62,15 @@
                     }
                     statsObj = statsObj || {};
 
-                    const decisionText = statsObj.decision || match.stats || match.status || 'UNKNOWN';
+                    let decisionText = 'PASS';
+                    if (statsObj && statsObj.decision) {
+                        decisionText = typeof statsObj.decision === 'object' ? JSON.stringify(statsObj.decision) : statsObj.decision;
+                    } else if (typeof match.stats === 'string') {
+                        decisionText = match.stats;
+                    } else if (match.status) {
+                        decisionText = match.status;
+                    }
+
                     const cornerAvg = statsObj.corner_avg || '-';
                     const sotAvg = statsObj.sot_avg || '-';
 
