@@ -11,7 +11,7 @@
         .card { background: #1e293b; border-radius: 12px; padding: 16px; margin-bottom: 12px; border: 1px solid #334155; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
         .header { display: flex; justify-content: space-between; font-size: 12px; color: #94a3b8; font-weight: bold; margin-bottom: 8px; }
         .teams { font-size: 16px; font-weight: bold; margin-bottom: 10px; }
-        .badge { display: inline-block; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: bold; margin-top: 6px; }
+        .badge { display: inline-block; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; margin-top: 6px; }
         .pass { background-color: #059669; color: #ecfdf5; }
         .skip { background-color: #dc2626; color: #fef2f2; }
         .stats { font-size: 13px; color: #cbd5e1; margin-top: 8px; line-height: 1.4; }
@@ -26,14 +26,22 @@
         // Supabase Credentials
         const SUPABASE_URL = "https://whtvjpowjzexmvcxnsmu.supabase.co";
         const SUPABASE_KEY = "Sb_publishable_oiaXoy0YmFn8fZdxqICSTA_85RSlB4b";
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        
+        // Supabase Client Initialization (Variable conflict fixed)
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         async function fetchMatches() {
-            const { data, error } = await supabase.from('matches').select('*');
+            const { data, error } = await supabaseClient.from('matches').select('*');
             const container = document.getElementById('matches-container');
             
             if (error) {
-                container.innerHTML = "<p>Error loading data.</p>";
+                console.error("Supabase Error:", error);
+                container.innerHTML = "<p style='color: #ef4444;'>Error loading data from Supabase.</p>";
+                return;
+            }
+
+            if (!data || data.length === 0) {
+                container.innerHTML = "<p>No matches found in database.</p>";
                 return;
             }
 
@@ -43,17 +51,22 @@
                 card.className = 'card';
                 const isPass = match.status === 'PASS';
                 
+                const statsObj = match.stats || {};
+                const decisionText = statsObj.decision || match.status || 'UNKNOWN';
+                const cornerAvg = statsObj.corner_avg || '-';
+                const sotAvg = statsObj.sot_avg || '-';
+
                 card.innerHTML = `
                     <div class="header">
                         <span>${match.league || 'League'}</span>
-                        <span>Phase ${match.phase} (${match.confidence}% Confidence)</span>
+                        <span>Phase ${match.phase || 1} (${match.confidence || 0}% Confidence)</span>
                     </div>
                     <div class="teams">${match.home_team} vs ${match.away_team}</div>
                     <div class="badge ${isPass ? 'pass' : 'skip'}">
-                        ${match.stats.decision || match.status}
+                        ${decisionText}
                     </div>
                     <div class="stats">
-                        Corner Avg: ${match.stats.corner_avg || '-'} | SoT: ${match.stats.sot_avg || '-'}
+                        Corner Avg: ${cornerAvg} | SoT Avg: ${sotAvg}
                     </div>
                 `;
                 container.appendChild(card);
