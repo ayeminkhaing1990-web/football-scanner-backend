@@ -24,12 +24,12 @@
 
     <script>
         const SUPABASE_URL = "https://whtvjpowjzexmvcxnsmu.supabase.co";
-        const SUPABASE_KEY = "EyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndodHZqcG93anpleG12Y3huc211Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU2NDUyMTAsImV4cCI6MjEwMTIyMTIxMH0.C9SKEQIVwtR6Nv-2_7skWipW_-_FALgQ0nuTY4ONCiQ";
+        // Corrected Key with lowercase 'e' at the beginning
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndodHZqcG93anpleG12Y3huc211Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU2NDUyMTAsImV4cCI6MjEwMTIyMTIxMH0.C9SKEQIVwtR6Nv-2_7skWipW_-_FALgQ0nuTY4ONCiQ";
 
         async function fetchMatches() {
             const container = document.getElementById('matches-container');
             try {
-                // Direct REST API Fetch without external CDN library dependency
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/matches?select=*`, {
                     method: 'GET',
                     headers: {
